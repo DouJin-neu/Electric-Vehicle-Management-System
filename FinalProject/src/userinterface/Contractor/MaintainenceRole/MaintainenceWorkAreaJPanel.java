@@ -1,0 +1,256 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package userinterface.Contractor.MaintainenceRole;
+
+import Business.EcoSystem;
+import Business.Enterprise.Enterprise;
+import Business.Network.Network;
+import Business.Organization.Company.ExecutiveOrganization;
+import Business.Organization.Contractor.ImplementorOrganization;
+import Business.UserAccount.UserAccount;
+import javax.swing.JPanel;
+import Business.Organization.Contractor.MaintenanceOrganization;
+import Business.Organization.Organization;
+import Business.Organization.OrganizationDirectory;
+import Business.StationMap.ChargingPile;
+import Business.StationMap.ChargingStation;
+import Business.WorkQueue.WorkRequest;
+import Business.WorkRequest.ContractorImplementRequest;
+import Business.WorkRequest.ContractorRepairRequest;
+import Business.WorkRequest.ExecutiveMaintenanceRequest;
+import java.awt.CardLayout;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import userinterface.Candidate.ResumeRequestJPanel;
+
+/**
+ *
+ * @author jindou
+ */
+public class MaintainenceWorkAreaJPanel extends javax.swing.JPanel {
+    
+     private JPanel userProcessContainer;
+     private Enterprise enterprise;
+     OrganizationDirectory organizationDirectory;
+     UserAccount account;
+     private MaintenanceOrganization org;
+     EcoSystem system;
+     private Network network;
+    List<ExecutiveMaintenanceRequest> maintenanceReqList;
+    /**
+     * Creates new form MaintainenceWorkAreaJPanel
+     */
+     public MaintainenceWorkAreaJPanel(JPanel userProcessContainer, EcoSystem business,
+            Enterprise enterprise, UserAccount account,
+            Organization organization, Network network) {
+        initComponents();
+          this.userProcessContainer = userProcessContainer;
+        this.enterprise = enterprise;
+
+        this.userProcessContainer = userProcessContainer;
+        this.enterprise = enterprise;
+        this.account = account;
+        this.network = network;
+        this.system = business;
+        this.org = (MaintenanceOrganization)organization;
+         maintenanceReqList = new ArrayList<>();
+        getMaintainenceWorkQueue();
+        populateTable();
+    }
+     public void populateTable(){
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+            model.setRowCount(0);
+           if(maintenanceReqList == null){
+                System.out.println(
+                      "list empty");
+                
+           }
+            else{
+                for (ExecutiveMaintenanceRequest r : maintenanceReqList) {
+                    if(r.getReceiver() == account){
+                         Object row[] = new Object[7];
+               
+                        row[0] = r;
+                        row[1] = r.getRecevingContractor();
+                        row[2] = r.getReceiver();
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        row[3] =  format.format(r.getRequestDate());
+                        row[4] = r.getRequestedStation();
+                        row[5] = r.getRequestedPile();
+                        row[6] = r.getStatus();
+                        model.addRow(row);
+                    }
+              
+                }
+           
+        }
+    }
+     
+      private List<ExecutiveMaintenanceRequest> getMaintainenceWorkQueue(){
+         ExecutiveOrganization executiveOrganization;
+        
+        for(Network network : system.getNetworkList()){
+            for(Enterprise enterp : network.getEnterpriseDirectory().getEnterpriseList()){
+                 System.out.println(
+                                "ENTERPRISE is" + enterp.getName());
+//                if(enterp.getName().equals("EVDriver") ){
+                  if(enterp.getEnterpriseType().getValue().equals("Company") ){
+                    System.out.println(
+                                "ENTERPRISE IN is" + enterp.getType());
+                    for(Organization comExecutive : enterp.getOrganizationDirectory().getOrganizationList()){
+                        if(comExecutive.getType() == Organization.Type.CompanyExecutive){
+                            executiveOrganization = (ExecutiveOrganization)comExecutive;
+                             maintenanceReqList.addAll(executiveOrganization.getExecutiveMaintenanceWorkQueue().getList());
+                        }
+                       
+                    }
+                }
+            }
+        }
+        return maintenanceReqList;
+    }
+   
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jScrollPane1 = new javax.swing.JScrollPane();
+        table = new javax.swing.JTable();
+        submitJButton = new javax.swing.JButton();
+        enterpriseLabel = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        btnEdit = new javax.swing.JButton();
+        btnDetail = new javax.swing.JButton();
+
+        setBackground(new java.awt.Color(255, 255, 255));
+        setPreferredSize(new java.awt.Dimension(1150, 600));
+        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        table.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "Request Type", "Contractor", "Repair Man", "Date", "Station", "Pile#", "Status"
+            }
+        ));
+        jScrollPane1.setViewportView(table);
+
+        add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 100, 750, 184));
+
+        submitJButton.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        submitJButton.setForeground(new java.awt.Color(40, 113, 162));
+        submitJButton.setText("Complete");
+        submitJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                submitJButtonActionPerformed(evt);
+            }
+        });
+        add(submitJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 310, 170, 40));
+
+        enterpriseLabel.setFont(new java.awt.Font("Tahoma", 1, 20)); // NOI18N
+        enterpriseLabel.setText("My Work Status");
+        add(enterpriseLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 50, 280, 30));
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/pics/main.png"))); // NOI18N
+        jLabel1.setText(" ");
+        add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 290, 350, 320));
+
+        btnEdit.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnEdit.setForeground(new java.awt.Color(40, 113, 162));
+        btnEdit.setText("Edit Profile");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
+        add(btnEdit, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 310, 170, 43));
+
+        btnDetail.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnDetail.setForeground(new java.awt.Color(40, 113, 162));
+        btnDetail.setText("View Detail");
+        btnDetail.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDetailActionPerformed(evt);
+            }
+        });
+        add(btnDetail, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 380, 170, 40));
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void submitJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitJButtonActionPerformed
+      
+         int selectedRow = table.getSelectedRow();
+
+        if (selectedRow < 0){
+            return;
+        }
+
+        ExecutiveMaintenanceRequest request = (ExecutiveMaintenanceRequest)table.getValueAt(selectedRow, 0);
+
+        request.setStatus("Completed");
+         account.setIsWorking(false);
+       
+         populateTable();
+        ChargingPile chargingPile = request.getRequestedPile();
+        for(ChargingStation chargingStation : system.getStationmap().getMap()){
+            for(ChargingPile cp : chargingStation.getPileList()){
+                if(cp.getId() == chargingPile.getId()){
+                    cp.setIsBroken(false);
+                }
+            }
+        }
+       
+        
+      
+    }//GEN-LAST:event_submitJButtonActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        // TODO add your handling code here:
+        CardLayout layout = (CardLayout) userProcessContainer.getLayout();
+        //userProcessContainer.add("RequestLabTestJPanel", new RequestLabTestJPanel(userProcessContainer, userAccount, enterpirse));
+        userProcessContainer.add("EditProfileJPanel", new EditProfileJPanel(userProcessContainer, account, system));
+        layout.next(userProcessContainer);
+    }//GEN-LAST:event_btnEditActionPerformed
+
+    private void btnDetailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDetailActionPerformed
+        // TODO add your handling code here:
+        int selectedRow = table.getSelectedRow();
+
+        if (selectedRow < 0){
+            JOptionPane.showMessageDialog(null, "Please select a row from table first", "Warning",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        ExecutiveMaintenanceRequest request = (ExecutiveMaintenanceRequest)table.getValueAt(selectedRow, 0);
+        CardLayout layout = (CardLayout) userProcessContainer.getLayout();
+        //userProcessContainer.add("RequestLabTestJPanel", new RequestLabTestJPanel(userProcessContainer, userAccount, enterpirse));
+        userProcessContainer.add("ViewMaintainDetailJPanel", new ViewMaintainDetailJPanel(userProcessContainer, request));
+        layout.next(userProcessContainer);
+    }//GEN-LAST:event_btnDetailActionPerformed
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDetail;
+    private javax.swing.JButton btnEdit;
+    private javax.swing.JLabel enterpriseLabel;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton submitJButton;
+    private javax.swing.JTable table;
+    // End of variables declaration//GEN-END:variables
+}

@@ -1,0 +1,257 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package userinterface.Contractor.ImplementorRole;
+
+import Business.EcoSystem;
+import Business.Enterprise.Enterprise;
+import Business.Network.Network;
+import Business.Organization.Company.ExecutiveOrganization;
+import Business.Organization.Contractor.ImplementorOrganization;
+import Business.Organization.Organization;
+import Business.Organization.OrganizationDirectory;
+import Business.StationMap.ChargingPile;
+import Business.StationMap.ChargingStation;
+import Business.StationMap.Coordinate;
+import Business.UserAccount.UserAccount;
+import Business.WorkQueue.ExecutiveImplementationWorkQueue;
+import Business.WorkQueue.WorkRequest;
+import Business.WorkRequest.ContractorImplementRequest;
+import Business.WorkRequest.ExecutiveNewLocationRequest;
+import java.awt.CardLayout;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.table.DefaultTableModel;
+import userinterface.Company.Admin.CompMngStationJPanel;
+import static userinterface.User.UserReportAShortageJPanel.geocoding;
+
+/**
+ *
+ * @author jindou
+ */
+public class ImplementorWorkAreaJPanel extends javax.swing.JPanel {
+
+      private JPanel userProcessContainer;
+     private Enterprise enterprise;
+     OrganizationDirectory organizationDirectory;
+     List<ExecutiveNewLocationRequest> locationReqList;
+     UserAccount account;
+     private ImplementorOrganization org;
+     EcoSystem system;
+     private Network network;
+     
+    /**
+     * Creates new form ImplementorWorkAreaJPanel
+     */
+     public ImplementorWorkAreaJPanel(JPanel userProcessContainer, EcoSystem business,
+            Enterprise enterprise, UserAccount account,
+            Organization organization, Network network) {
+        initComponents();
+          this.userProcessContainer = userProcessContainer;
+        this.enterprise = enterprise;
+
+        this.userProcessContainer = userProcessContainer;
+        this.enterprise = enterprise;
+        this.account = account;
+        this.network = network;
+        this.system = business;
+        this.org = (ImplementorOrganization)organization;
+         locationReqList = new ArrayList<>();
+        getNewStationWorkQueue();
+        populateTable();
+    }
+    
+    public void populateTable(){
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+            model.setRowCount(0);
+            if(locationReqList == null){
+                System.out.println(
+                      "list empty");
+                
+           }
+            else{
+                for (ExecutiveNewLocationRequest r : locationReqList) {
+                     if(r.getReceiver() == account){
+                         Object row[] = new Object[6];
+                        row[0] = r;
+                         row[1] = r.getSendingCompany();
+                        row[2] = r.getReceiver();
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        row[3] = format.format(r.getRequestDate());
+                        row[4] = r.getFullAddress();
+                        row[5] = r.getStatus();
+                        model.addRow(row);
+                     }
+               
+                }
+           }
+    }
+    private List<ExecutiveNewLocationRequest>  getNewStationWorkQueue(){
+         ExecutiveOrganization executiveOrganization;
+        
+        for(Network network : system.getNetworkList()){
+            for(Enterprise enterp : network.getEnterpriseDirectory().getEnterpriseList()){
+                 System.out.println(
+                                "ENTERPRISE is" + enterp.getName());
+//                if(enterp.getName().equals("EVDriver") ){
+                  if(enterp.getEnterpriseType().getValue().equals("Company") ){
+                    System.out.println(
+                                "ENTERPRISE IN is" + enterp.getType());
+                    for(Organization comExecutive : enterp.getOrganizationDirectory().getOrganizationList()){
+                        if(comExecutive.getType() == Organization.Type.CompanyExecutive){
+                            executiveOrganization = (ExecutiveOrganization)comExecutive;
+                             locationReqList.addAll(executiveOrganization.getExecutiveImplementationWorkQueue().getList());
+                        }
+                         
+                    }
+                }
+            }
+        }
+        return locationReqList;
+    }
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jScrollPane2 = new javax.swing.JScrollPane();
+        table = new javax.swing.JTable();
+        enterpriseLabel = new javax.swing.JLabel();
+        submitJButton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        btnDetail = new javax.swing.JButton();
+        btnEdit = new javax.swing.JButton();
+
+        setBackground(new java.awt.Color(255, 255, 255));
+        setPreferredSize(new java.awt.Dimension(1150, 600));
+        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        table.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "Request Type", "Exe Company", "Implementor", "Date", "Location", "Status"
+            }
+        ));
+        jScrollPane2.setViewportView(table);
+
+        add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(98, 100, 740, 127));
+
+        enterpriseLabel.setFont(new java.awt.Font("Tahoma", 1, 20)); // NOI18N
+        enterpriseLabel.setText("My Work Status");
+        add(enterpriseLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 40, 280, 30));
+
+        submitJButton.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        submitJButton.setForeground(new java.awt.Color(40, 113, 162));
+        submitJButton.setText("Complete");
+        submitJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                submitJButtonActionPerformed(evt);
+            }
+        });
+        add(submitJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 260, 159, 40));
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/pics/assignments.png"))); // NOI18N
+        add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 240, 470, 370));
+
+        btnDetail.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnDetail.setForeground(new java.awt.Color(40, 113, 162));
+        btnDetail.setText("View Detail");
+        btnDetail.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDetailActionPerformed(evt);
+            }
+        });
+        add(btnDetail, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 330, 160, 40));
+
+        btnEdit.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnEdit.setForeground(new java.awt.Color(40, 113, 162));
+        btnEdit.setText("Edit Profile");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
+        add(btnEdit, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 260, 150, 40));
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void submitJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitJButtonActionPerformed
+        
+        int selectedRow = table.getSelectedRow();
+
+        if (selectedRow < 0){
+            return;
+        }
+
+        ExecutiveNewLocationRequest request = (ExecutiveNewLocationRequest)table.getValueAt(selectedRow, 0);
+
+        request.setStatus("Completed");
+        populateTable();
+        account.setIsWorking(false);
+        
+        ChargingStation chargingStation = new ChargingStation(request.getStationName());
+        //createCoordinate(request);
+        chargingStation.setFullAddress(request.getFullAddress());
+        chargingStation.setNetwork(request.getSendingCompany().getNetwork());
+        int numPile = request.getNumPiles();
+        while(numPile != 0){
+            ChargingPile p = new ChargingPile();
+            chargingStation.add(p);
+            numPile --;
+        }
+        chargingStation.setCoordinate( request.getRequestedLocation());
+        system.getStationmap().getMap().add(chargingStation);
+    }//GEN-LAST:event_submitJButtonActionPerformed
+
+    private void btnDetailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDetailActionPerformed
+        // TODO add your handling code here:
+        int selectedRow = table.getSelectedRow();
+
+        if (selectedRow < 0){
+            JOptionPane.showMessageDialog(null, "Please select a row from table first", "Warning",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        ExecutiveNewLocationRequest request = (ExecutiveNewLocationRequest)table.getValueAt(selectedRow, 0);
+        CardLayout layout = (CardLayout) userProcessContainer.getLayout();
+        //userProcessContainer.add("RequestLabTestJPanel", new RequestLabTestJPanel(userProcessContainer, userAccount, enterpirse));
+        userProcessContainer.add("ViewImplementDetailJPanel", new ViewImplementDetailJPanel(userProcessContainer, request));
+        layout.next(userProcessContainer);
+    }//GEN-LAST:event_btnDetailActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        // TODO add your handling code here:
+        CardLayout layout = (CardLayout) userProcessContainer.getLayout();
+        //userProcessContainer.add("RequestLabTestJPanel", new RequestLabTestJPanel(userProcessContainer, userAccount, enterpirse));
+        userProcessContainer.add("EditProfileJPanel", new EditProfileJPanel(userProcessContainer, account, system));
+        layout.next(userProcessContainer);
+    }//GEN-LAST:event_btnEditActionPerformed
+ 
+   
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDetail;
+    private javax.swing.JButton btnEdit;
+    private javax.swing.JLabel enterpriseLabel;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JButton submitJButton;
+    private javax.swing.JTable table;
+    // End of variables declaration//GEN-END:variables
+}
